@@ -1,6 +1,9 @@
-from django.contrib.auth.models import AbstractUser
-from django.shortcuts import render
+from rest_framework import viewsets, generics
+
+from user.models import User
+from user.serializers import RegisterSerializer
 
 
-class User(AbstractUser):
-    pass
+class Register(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = RegisterSerializer
