@@ -1,3 +1,6 @@
+from django.contrib.auth.models import AbstractUser
 from django.shortcuts import render
 
-# Create your views here.
+
+class User(AbstractUser):
+    pass
