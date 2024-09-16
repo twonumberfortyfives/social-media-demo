@@ -6,8 +6,9 @@ from user.models import User
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("username", "first_name", "last_name", "email", "password")
+        fields = ("username", "first_name", "last_name", "email", "password", "is_verified", "tokens",)
         extra_kwargs = {"password": {"write_only": True, "min_length": 5}}
+        read_only_fields = ("id", "is_verified")
 
     def create(self, validated_data):
         password = validated_data["password"]
@@ -26,4 +27,13 @@ class RegisterSerializer(serializers.ModelSerializer):
 class MyProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("username", "first_name", "last_name", "email")
+        fields = ("username", "first_name", "last_name", "email", "is_verified",)
+        read_only_fields = ("id", "is_verified")
+
+
+class EmailVerificationSerializer(serializers.ModelSerializer):
+    token = serializers.CharField(max_length=555)
+
+    class Meta:
+        model = User
+        fields = ['token']
