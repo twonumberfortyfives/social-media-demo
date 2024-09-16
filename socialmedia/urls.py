@@ -19,7 +19,9 @@ from django.contrib import admin
 from django.urls import path
 from django.urls.conf import include
 
+from socialmedia import views
+
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("user/api_v1/", include("user.urls")),
+    path("user/", include("user.urls")),
 ]

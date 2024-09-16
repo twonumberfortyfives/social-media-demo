@@ -1,5 +1,6 @@
 import jwt
 from django.contrib.sites.shortcuts import get_current_site
+from django.shortcuts import render
 from django.urls.base import reverse
 from rest_framework import generics, status
 from rest_framework.generics import GenericAPIView
@@ -18,24 +19,29 @@ class Register(GenericAPIView):
         data = request.data
         serializer = self.serializer_class(data=data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        user = serializer.data
+        user = serializer.save()
 
-        # getting tokens
-        user_email = User.objects.get(email=user['email'])
-        tokens = RefreshToken.for_user(user_email).access_token
-        # send email for user verification
+        # Create a token for the user
+        tokens = RefreshToken.for_user(user).access_token
+
+        # Generate the email verification URL
         current_site = get_current_site(request).domain
-        relative_link = reverse('email-verify')
-        absurl = 'http://' + current_site + relative_link + "?token=" + str(tokens)
-        email_body = 'Hi ' + user['username'] + \
-                     ' Use the link below to verify your email \n' + absurl
-        data = {'email_body': email_body, 'to_email': user['email'],
-                'email_subject': 'Verify your email'}
+        relative_link = reverse('email-verify')  # Assuming you have an email-verify URL
+        absurl = f'http://{current_site}{relative_link}?token={tokens}'
+        email_body = f'Hi {user.username}, Use the link below to verify your email:\n{absurl}'
 
-        Util.send_email(data=data)
+        # Send the email
+        email_data = {'email_body': email_body, 'to_email': user.email, 'email_subject': 'Verify your email'}
+        Util.send_email(data=email_data)
 
-        return Response({'user_data': user}, status=status.HTTP_201_CREATED)
+        # Return success response
+        return Response({
+            "message": f"{user.username} registered successfully. Check your {user.email} for verification link.",
+        }, status=status.HTTP_201_CREATED)
+
+
+def register_view(request):
+    return render(request, "register.html")
 
 
 class VerifyEmail(GenericAPIView):
