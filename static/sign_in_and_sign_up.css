@@ -75,7 +75,7 @@ button:hover {
 /* Стиль сообщения */
 #response-message {
     margin-top: 20px;
-    color: #f85149; /* Красный цвет для сообщений об ошибках */
+    color: #238636; /* Красный цвет для сообщений об ошибках */
     font-size: 14px;
     font-weight: bold;
 }

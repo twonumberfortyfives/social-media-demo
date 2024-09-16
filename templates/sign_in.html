@@ -30,51 +30,35 @@
         event.preventDefault();
 
         const formData = new FormData(this);
-        const formObject = Object.fromEntries(formData.entries());  // Преобразование FormData в объект
+        const formObject = Object.fromEntries(formData.entries());
 
-        fetch('/user/api_v1/token/', {  // Убедитесь, что URL правильный
+        fetch('/user/api_v1/token/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(formObject),  // Отправка данных в формате JSON
+            body: JSON.stringify(formObject),
         })
         .then(response => response.json())
         .then(data => {
+            const responseMessageElement = document.getElementById('response-message');
             if (data.access) {
-                // Сохранение токена в localStorage
-                localStorage.setItem('access_token', data.access);
-
-                // Сообщение об успешном входе
-                document.getElementById('response-message').innerText = 'Logged in successfully!';
-
-                // Перенаправление на другую страницу после успешного входа
-                // window.location.href = '/dashboard/';  // Замените на вашу страницу
+                // Success: Set message and style
+                responseMessageElement.innerText = 'Login successful! Token saved.';
+                responseMessageElement.style.color = 'green';
             } else {
-                // Отображение сообщения об ошибке
-                document.getElementById('response-message').innerText = 'Login failed. Please try again.';
+                // Failure: Set message and style
+                responseMessageElement.innerText = 'Login failed. Please try again.';
+                responseMessageElement.style.color = 'red';
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            document.getElementById('response-message').innerText = 'An error occurred. Please try again.';
+            const responseMessageElement = document.getElementById('response-message');
+            responseMessageElement.innerText = 'An error occurred. Please try again.';
+            responseMessageElement.style.color = 'red';
         });
     });
-
-    // Пример функции для использования токена в будущих запросах
-    function fetchWithToken(url, options = {}) {
-        const token = localStorage.getItem('access_token');  // Получаем токен из localStorage
-        if (token) {
-            options.headers = {
-                ...options.headers,
-                'Authorization': `Bearer ${token}`,  // Добавляем токен в заголовок Authorization
-            };
-        }
-
-        return fetch(url, options)
-            .then(response => response.json())
-            .catch(error => console.error('Error with token request:', error));
-    }
 </script>
 
 </body>
