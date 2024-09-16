@@ -35,19 +35,17 @@ class Register(GenericAPIView):
 
         Util.send_email(data=data)
 
-        return Response({'user_data': user, 'access_token': str(tokens)}, status=status.HTTP_201_CREATED)
+        return Response({'user_data': user}, status=status.HTTP_201_CREATED)
 
 
 class VerifyEmail(GenericAPIView):
     serializer_class = EmailVerificationSerializer
 
     def get(self, request):
-        token = self.request.user.tokens()['access']
-        print(token)
+        token = request.GET.get('token')
         try:
-            payload = jwt.decode(token, options={"verify_signature": False})
-            print(payload)
-            user = User.objects.get(id=self.request.user.id)
+            payload = jwt.decode(token, options={"verify_signature": False})  # decoding the access token getting user id from it
+            user = User.objects.get(id=payload["user_id"])
             if not user.is_verified:
                 user.is_verified = True
                 user.save()
