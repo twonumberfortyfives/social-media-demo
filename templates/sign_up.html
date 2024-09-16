@@ -1,7 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<link rel="stylesheet" href="{% static 'register.css' %}">
+<link rel="stylesheet" href="{% static 'sign_in_and_sign_up.css' %}">
 <head>
   <title>Sign Up</title>
 </head>
@@ -26,6 +26,9 @@
   <button type="submit">Submit</button>
 </form>
 <br><br>
+
+<p>You have an account? <a href="{% url 'sign-in' %}">Sign in here</a></p>
+
 <div id="response-message"></div>
 
 <script>
