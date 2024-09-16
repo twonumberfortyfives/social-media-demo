@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Sign In</title>
+  <link rel="stylesheet" href="{% static 'register.css' %}">
+</head>
+<body>
+
+<h1 id="page-title">Sign In</h1>
+
+<form id="registration-form">
+  <label for="email">Email:</label>
+  <input type="email" id="email" name="email" required><br><br>
+
+  <label for="password">Password:</label>
+  <input type="password" id="password" name="password" required><br><br>
+
+  <button type="submit">Submit</button>
+</form>
+
+<br><br>
+
+<p>Don't have an account? <a href="{% url 'sign-up' %}">Register here</a></p>
+
+<div id="response-message"></div>
+
+<script>
+    document.getElementById('registration-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+        const formObject = Object.fromEntries(formData.entries());  // Преобразование FormData в объект
+
+        fetch('/user/api_v1/token/', {  // Убедитесь, что URL правильный
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formObject),  // Отправка данных в формате JSON
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.access) {
+                // Сохранение токена в localStorage
+                localStorage.setItem('access_token', data.access);
+
+                // Сообщение об успешном входе
+                document.getElementById('response-message').innerText = 'Logged in successfully!';
+
+                // Перенаправление на другую страницу после успешного входа
+                // window.location.href = '/dashboard/';  // Замените на вашу страницу
+            } else {
+                // Отображение сообщения об ошибке
+                document.getElementById('response-message').innerText = 'Login failed. Please try again.';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('response-message').innerText = 'An error occurred. Please try again.';
+        });
+    });
+
+    // Пример функции для использования токена в будущих запросах
+    function fetchWithToken(url, options = {}) {
+        const token = localStorage.getItem('access_token');  // Получаем токен из localStorage
+        if (token) {
+            options.headers = {
+                ...options.headers,
+                'Authorization': `Bearer ${token}`,  // Добавляем токен в заголовок Authorization
+            };
+        }
+
+        return fetch(url, options)
+            .then(response => response.json())
+            .catch(error => console.error('Error with token request:', error));
+    }
+</script>
+
+</body>
+</html>

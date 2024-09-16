@@ -40,8 +40,12 @@ class Register(GenericAPIView):
         }, status=status.HTTP_201_CREATED)
 
 
-def register_view(request):
-    return render(request, "register.html")
+def sign_up_view(request):
+    return render(request, "sign_up.html")
+
+
+def sign_in_view(request):
+    return render(request, "sign_in.html")
 
 
 class VerifyEmail(GenericAPIView):
