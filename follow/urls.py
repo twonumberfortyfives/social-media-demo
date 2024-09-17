@@ -4,7 +4,7 @@ from rest_framework import routers
 from follow.views import FollowViewSet
 
 router = routers.DefaultRouter()
-router.register('follow', FollowViewSet)
+router.register('follows', FollowViewSet)
 
 urlpatterns = [
 

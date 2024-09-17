@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from follow.models import Follow
+
+
+@admin.register(Follow)
+class FollowAdmin(admin.ModelAdmin):
+    pass
