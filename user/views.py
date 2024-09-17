@@ -30,7 +30,9 @@ class Register(GenericAPIView):
 
         # Generate the email verification URL
         current_site = get_current_site(request).domain
-        relative_link = reverse("user:email-verify")  # Assuming you have an email-verify URL
+        relative_link = reverse(
+            "user:email-verify"
+        )  # Assuming you have an email-verify URL
         absurl = f"http://{current_site}{relative_link}?token={tokens}"
         email_body = (
             f"Hi {user.username}, Use the link below to verify your email:\n{absurl}"

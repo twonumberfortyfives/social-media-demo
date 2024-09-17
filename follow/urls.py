@@ -4,12 +4,10 @@ from rest_framework import routers
 from follow.views import FollowViewSet
 
 router = routers.DefaultRouter()
-router.register('follows', FollowViewSet)
+router.register("follows", FollowViewSet)
 
-urlpatterns = [
-
-]
+urlpatterns = []
 
 urlpatterns += router.urls
 
-app_name = 'follow'
+app_name = "follow"
