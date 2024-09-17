@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Sign In</title>
+  <link rel="stylesheet" href="{% static 'sign_in_and_sign_up.css' %}">
+</head>
+<body>
+
+<h1 id="page-title">Sign In</h1>
+
+<form id="registration-form">
+  <label for="email">Email:</label>
+  <input type="email" id="email" name="email" required><br><br>
+
+  <label for="password">Password:</label>
+  <input type="password" id="password" name="password" required><br><br>
+
+  <button type="submit">Submit</button>
+</form>
+
+<br><br>
+
+<p>Don't have an account? <a href="{% url 'sign-up' %}">Register here</a></p>
+
+<div id="response-message"></div>
+
+<script>
+    document.getElementById('registration-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+        const formObject = Object.fromEntries(formData.entries());
+
+        fetch('/user/api_v1/token/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formObject),
+        })
+        .then(response => response.json())
+        .then(data => {
+            const responseMessageElement = document.getElementById('response-message');
+            if (data.access) {
+                // Success: Set message and style
+                responseMessageElement.innerText = 'Login successful! Token saved.';
+                responseMessageElement.style.color = 'green';
+                window.location.href = "/main/"
+            } else {
+                // Failure: Set message and style
+                responseMessageElement.innerText = 'Login failed. Please try again.';
+                responseMessageElement.style.color = 'red';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            const responseMessageElement = document.getElementById('response-message');
+            responseMessageElement.innerText = 'An error occurred. Please try again.';
+            responseMessageElement.style.color = 'red';
+        });
+    });
+</script>
+
+</body>
+</html>
