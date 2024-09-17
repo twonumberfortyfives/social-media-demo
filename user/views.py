@@ -53,14 +53,6 @@ class Register(GenericAPIView):
         )
 
 
-def sign_up_view(request):
-    return render(request, "sign_up.html")
-
-
-def sign_in_view(request):
-    return render(request, "sign_in.html")
-
-
 class VerifyEmail(GenericAPIView):
     serializer_class = EmailVerificationSerializer
 
@@ -92,3 +84,11 @@ class MyProfile(generics.RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+def sign_up_view(request):
+    return render(request, "sign_up.html")
+
+
+def sign_in_view(request):
+    return render(request, "sign_in.html")
