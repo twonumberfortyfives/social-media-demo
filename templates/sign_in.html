@@ -46,6 +46,7 @@
                 // Success: Set message and style
                 responseMessageElement.innerText = 'Login successful! Token saved.';
                 responseMessageElement.style.color = 'green';
+                window.location.href = "/main/"
             } else {
                 // Failure: Set message and style
                 responseMessageElement.innerText = 'Login failed. Please try again.';
