@@ -23,5 +23,6 @@ from socialmedia import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("user/", include("user.urls")),
+    path("user/", include("user.urls", namespace="user")),
+    path("follow/", include("follow.urls", namespace="follow")),
 ]

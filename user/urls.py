@@ -18,3 +18,5 @@ urlpatterns = [
     path("sign-up/", sign_up_view, name="sign-up"),
     path("sign-in/", sign_in_view, name="sign-in"),
 ]
+
+app_name = "user"
