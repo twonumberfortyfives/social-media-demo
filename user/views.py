@@ -8,7 +8,11 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from user.models import User
-from user.serializers import RegisterSerializer, MyProfileSerializer, EmailVerificationSerializer
+from user.serializers import (
+    RegisterSerializer,
+    MyProfileSerializer,
+    EmailVerificationSerializer,
+)
 from user.utils import Util
 
 
@@ -26,18 +30,27 @@ class Register(GenericAPIView):
 
         # Generate the email verification URL
         current_site = get_current_site(request).domain
-        relative_link = reverse('email-verify')  # Assuming you have an email-verify URL
-        absurl = f'http://{current_site}{relative_link}?token={tokens}'
-        email_body = f'Hi {user.username}, Use the link below to verify your email:\n{absurl}'
+        relative_link = reverse("email-verify")  # Assuming you have an email-verify URL
+        absurl = f"http://{current_site}{relative_link}?token={tokens}"
+        email_body = (
+            f"Hi {user.username}, Use the link below to verify your email:\n{absurl}"
+        )
 
         # Send the email
-        email_data = {'email_body': email_body, 'to_email': user.email, 'email_subject': 'Verify your email'}
+        email_data = {
+            "email_body": email_body,
+            "to_email": user.email,
+            "email_subject": "Verify your email",
+        }
         Util.send_email(data=email_data)
 
         # Return success response
-        return Response({
-            "message": f"{user.username} registered successfully. Check your {user.email} for verification link.",
-        }, status=status.HTTP_201_CREATED)
+        return Response(
+            {
+                "message": f"{user.username} registered successfully. Check your {user.email} for verification link.",
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
 
 def sign_up_view(request):
@@ -52,18 +65,26 @@ class VerifyEmail(GenericAPIView):
     serializer_class = EmailVerificationSerializer
 
     def get(self, request):
-        token = request.GET.get('token')
+        token = request.GET.get("token")
         try:
-            payload = jwt.decode(token, options={"verify_signature": False})  # decoding the access token getting user id from it
+            payload = jwt.decode(
+                token, options={"verify_signature": False}
+            )  # decoding the access token getting user id from it
             user = User.objects.get(id=payload["user_id"])
             if not user.is_verified:
                 user.is_verified = True
                 user.save()
-            return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+            return Response(
+                {"email": "Successfully activated"}, status=status.HTTP_200_OK
+            )
         except jwt.ExpiredSignatureError as identifier:
-            return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Activation Expired"}, status=status.HTTP_400_BAD_REQUEST
+            )
         except jwt.exceptions.DecodeError as identifier:
-            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class MyProfile(generics.RetrieveUpdateDestroyAPIView):
