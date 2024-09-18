@@ -54,6 +54,8 @@
                     // Display success message
                     responseMessageElement.innerText = data.message;
                     responseMessageElement.style.color = 'green';
+                    localStorage.setItem("jwtToken", data.access);
+                    window.location.href = "/user/my-profile/"
                 } else {
                     // Display generic error message if something goes wrong
                     responseMessageElement.innerText = 'An error occurred during registration.';
