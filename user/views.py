@@ -94,3 +94,7 @@ def sign_up_view(request):
 
 def sign_in_view(request):
     return render(request, "sign_in.html")
+
+
+def my_profile_view(request):
+    return render(request, "my_profile.html")

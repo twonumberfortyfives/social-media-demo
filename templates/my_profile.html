@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile</title>
+  <link rel="stylesheet" href="{% static 'my_profile.css' %}">
+</head>
+<body>
+
+<div id="profile-container">
+  <header>
+    <img src="" alt="Profile Picture" id="profile-pic">
+    <h1 id="username">Username</h1>
+  </header>
+
+  <section id="profile-info">
+    <h2>Profile Information</h2>
+    <p><strong>First Name:</strong> <span id="first-name"></span></p>
+    <p><strong>Last Name:</strong> <span id="last-name"></span></p>
+    <p><strong>Email:</strong> <span id="email"></span></p>
+  </section>
+
+  <button id="edit-profile-btn">Edit Profile</button>
+
+  <div id="response-message"></div>
+</div>
+
+<script>
+  function makeAuthenticatedRequest(url, options = {}) {
+    const token = localStorage.getItem('jwtToken');
+
+    const headers = {
+      'Content-Type': 'application/json',
+      ...options.headers,
+      'Authorization': `Bearer ${token}`,
+    };
+
+    return fetch(url, {
+      ...options,
+      headers,
+    });
+  }
+
+  makeAuthenticatedRequest('/user/api_v1/my-profile/')
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      document.getElementById('username').innerText = data.username;
+      document.getElementById('first-name').innerText = data.first_name;
+      document.getElementById('last-name').innerText = data.last_name;
+      document.getElementById('email').innerText = data.email;
+      document.getElementById('profile-pic').src = data.profile_picture;
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      const responseMessageElement = document.getElementById('response-message');
+      responseMessageElement.innerText = 'Failed to load profile data.';
+      responseMessageElement.style.color = 'red';
+    });
+
+  document.getElementById('edit-profile-btn').addEventListener('click', function () {
+    window.location.href = "/user/edit-profile/";
+  });
+</script>
+
+</body>
+</html>

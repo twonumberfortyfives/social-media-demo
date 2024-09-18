@@ -14,6 +14,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             "password",
             "is_verified",
             "tokens",
+            "profile_picture",
         )
         extra_kwargs = {"password": {"write_only": True, "min_length": 5}}
         read_only_fields = ("id", "is_verified")
@@ -26,6 +27,7 @@ class RegisterSerializer(serializers.ModelSerializer):
                 first_name=validated_data["first_name"],
                 last_name=validated_data["last_name"],
                 email=validated_data["email"],
+                profile_picture=validated_data["profile_picture"],
             )
             user.set_password(password)
             user.save()
@@ -41,6 +43,8 @@ class MyProfileSerializer(serializers.ModelSerializer):
             "last_name",
             "email",
             "is_verified",
+            "bio",
+            "profile_picture",
         )
         read_only_fields = ("id", "is_verified")
 

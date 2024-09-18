@@ -75,9 +75,18 @@ button:hover {
 /* Стиль сообщения */
 #response-message {
     margin-top: 20px;
-    color: #238636; /* Красный цвет для сообщений об ошибках */
     font-size: 14px;
     font-weight: bold;
+}
+
+/* Успешное сообщение */
+#response-message.success {
+    color: #238636; /* Зеленый цвет для успешных сообщений */
+}
+
+/* Ошибочное сообщение */
+#response-message.error {
+    color: #ff3333; /* Красный цвет для сообщений об ошибках */
 }
 
 /* Стиль ссылки на регистрацию */

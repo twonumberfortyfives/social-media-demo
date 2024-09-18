@@ -6,7 +6,7 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
-from user.views import Register, MyProfile, VerifyEmail, sign_up_view, sign_in_view
+from user.views import Register, MyProfile, VerifyEmail, sign_up_view, sign_in_view, my_profile_view
 
 urlpatterns = [
     path("api_v1/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
@@ -17,6 +17,7 @@ urlpatterns = [
     path("api_v1/email-verify/", VerifyEmail.as_view(), name="email-verify"),
     path("sign-up/", sign_up_view, name="sign-up"),
     path("sign-in/", sign_in_view, name="sign-in"),
+    path("my-profile/", my_profile_view, name="my-profile"),
 ]
 
 app_name = "user"
