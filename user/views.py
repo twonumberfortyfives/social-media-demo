@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.urls.base import reverse
 from rest_framework import generics, status
 from rest_framework.generics import GenericAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -83,6 +84,7 @@ class VerifyEmail(GenericAPIView):
 
 class MyProfile(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = MyProfileSerializer
+    permission_classes = [IsAuthenticated,]
 
     def get_object(self):
         return self.request.user
