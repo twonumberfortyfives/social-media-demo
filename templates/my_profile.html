@@ -43,7 +43,7 @@
   <header>
     <input type="file" id="file-input" accept="image/*">
     <img src="" alt="Profile Picture" id="profile-pic" class="editable">
-    <h1 id="username" class="editable">Username</h1>
+    <h1 id="username" class="editable" data-field="username">Username</h1>
   </header>
 
   <section id="profile-info">
@@ -65,7 +65,6 @@
     function makeAuthenticatedRequest(url, options = {}) {
         const token = getToken();
         const headers = {
-            'Content-Type': 'application/json',
             ...options.headers,
             'Authorization': `Bearer ${token}`,
         };
@@ -76,6 +75,43 @@
         });
     }
 
+    function updateProfilePicture(file, additionalFields = {}) {
+        const formData = new FormData();
+        formData.append('profile_picture', file);
+
+        // Append additional fields to the FormData
+        for (const [key, value] of Object.entries(additionalFields)) {
+            formData.append(key, value);
+        }
+
+        return makeAuthenticatedRequest('/user/api_v1/my-profile/', {
+            method: 'PATCH',
+            body: formData, // FormData automatically sets the correct Content-Type header
+        })
+            .then(response => {
+                if (response.status === 401) {
+                    throw new Error('Unauthorized. Please log in again.');
+                }
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                // Update the profile picture src
+                document.getElementById('profile-pic').src = data.profile_picture;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const responseMessageElement = document.getElementById('response-message');
+                responseMessageElement.innerText = 'Failed to update profile picture.';
+                responseMessageElement.style.color = 'red';
+            });
+    }
+
     function saveChanges(element) {
         const input = element.querySelector('input');
         const newValue = input.value;
@@ -83,28 +119,34 @@
 
         return makeAuthenticatedRequest('/user/api_v1/my-profile/', {
             method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({[field]: newValue}),
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.error) {
-                throw new Error(data.error);
-            }
-            // Update text
-            element.classList.remove('editing');
-            element.innerHTML = newValue;
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            const responseMessageElement = document.getElementById('response-message');
-            responseMessageElement.innerText = 'Failed to update profile.';
-            responseMessageElement.style.color = 'red';
-        });
+            .then(response => {
+                if (response.status === 401) {
+                    throw new Error('Unauthorized. Please log in again.');
+                }
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                // Update text
+                element.classList.remove('editing');
+                element.innerHTML = newValue;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const responseMessageElement = document.getElementById('response-message');
+                responseMessageElement.innerText = 'Failed to update profile.';
+                responseMessageElement.style.color = 'red';
+            });
     }
 
     function toggleEditMode(element) {
@@ -138,59 +180,35 @@
         }
     }
 
-    function updateProfilePicture(file) {
-        const formData = new FormData();
-        formData.append('profile_picture', file);
-
-        return makeAuthenticatedRequest('/user/api_v1/my-profile/', {
-            method: 'PATCH',
-            body: formData,
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.error) {
-                throw new Error(data.error);
-            }
-            document.getElementById('profile-pic').src = data.profile_picture;
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            const responseMessageElement = document.getElementById('response-message');
-            responseMessageElement.innerText = 'Failed to update profile picture.';
-            responseMessageElement.style.color = 'red';
-        });
+    function loadProfileData() {
+        makeAuthenticatedRequest('/user/api_v1/my-profile/')
+            .then(response => {
+                if (response.status === 401) {
+                    throw new Error('Unauthorized. Please log in again.');
+                }
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                document.getElementById('username').innerText = data.username;
+                document.getElementById('first-name').innerText = data.first_name;
+                document.getElementById('last-name').innerText = data.last_name;
+                document.getElementById('email').innerText = data.email;
+                document.getElementById('bio').innerText = data.bio;
+                document.getElementById('profile-pic').src = data.profile_picture;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const responseMessageElement = document.getElementById('response-message');
+                responseMessageElement.innerText = 'Failed to load profile data.';
+                responseMessageElement.style.color = 'red';
+            });
     }
-
-    // Load user profile data on page load
-    makeAuthenticatedRequest('/user/api_v1/my-profile/')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.error) {
-                throw new Error(data.error);
-            }
-            document.getElementById('username').innerText = data.username;
-            document.getElementById('first-name').innerText = data.first_name;
-            document.getElementById('last-name').innerText = data.last_name;
-            document.getElementById('email').innerText = data.email;
-            document.getElementById('bio').innerText = data.bio;
-            document.getElementById('profile-pic').src = data.profile_picture;
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            const responseMessageElement = document.getElementById('response-message');
-            responseMessageElement.innerText = 'Failed to load profile data.';
-            responseMessageElement.style.color = 'red';
-        });
 
     // Add event listeners to editable fields
     document.querySelectorAll('.editable').forEach(element => {
@@ -215,9 +233,17 @@
     document.getElementById('file-input').addEventListener('change', function (event) {
         const file = event.target.files[0];
         if (file) {
-            updateProfilePicture(file);
+            // Update profile picture and include other fields if needed
+            const additionalFields = {
+                'username': document.getElementById('username').innerText, // Example of including other fields
+            };
+            updateProfilePicture(file, additionalFields);
         }
     });
+
+    // Load user profile data on page load
+    loadProfileData();
+
 
 </script>
 

@@ -47,6 +47,8 @@ class User(AbstractUser):
     def clean(self):
         if not self.profile_picture:
             self.profile_picture = get_random_default_photo()
+        if not self.bio:
+            self.bio = "nothing."
 
     def save(self, *args, **kwargs):
         self.full_clean()

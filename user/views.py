@@ -89,6 +89,10 @@ class MyProfile(generics.RetrieveUpdateDestroyAPIView):
     def get_object(self):
         return self.request.user
 
+    def patch(self, request, *args, **kwargs):
+        print(request.FILES)
+        return super().patch(request, *args, **kwargs)
+
 
 def sign_up_view(request):
     return render(request, "sign_up.html")
