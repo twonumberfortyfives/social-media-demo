@@ -84,7 +84,9 @@ class VerifyEmail(GenericAPIView):
 
 class MyProfile(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = MyProfileSerializer
-    permission_classes = [IsAuthenticated,]
+    permission_classes = [
+        IsAuthenticated,
+    ]
 
     def get_object(self):
         return self.request.user

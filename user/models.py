@@ -33,7 +33,9 @@ class User(AbstractUser):
     is_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     bio = models.CharField(blank=True, null=True, max_length=255)
-    profile_picture = models.ImageField(upload_to=image_file_path, null=True, blank=True)
+    profile_picture = models.ImageField(
+        upload_to=image_file_path, null=True, blank=True
+    )
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
 
