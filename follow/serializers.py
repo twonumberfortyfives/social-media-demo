@@ -4,9 +4,10 @@ from follow.models import Follow
 
 
 class FollowListSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Follow
-        fields = "__all__"
+        fields = ("id", "follower", "followed", "created_at")
 
     def validate(self, data):
         common = Follow.validate_follow_yourself(data["follower"], data["followed"])

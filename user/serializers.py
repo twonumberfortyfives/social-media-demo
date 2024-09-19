@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from follow.models import Follow
 from user.models import User
 
 
@@ -34,10 +35,37 @@ class RegisterSerializer(serializers.ModelSerializer):
             return user
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id", "username", "profile_picture")
+
+
+class MyFollowersListSerializer(serializers.ModelSerializer):
+    follower = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Follow
+        fields = ("id", "follower", "created_at")
+
+
+class MyFollowingsListSerializer(serializers.ModelSerializer):
+    followed = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Follow
+        fields = ("id", "followed", "created_at")
+
+
 class MyProfileSerializer(serializers.ModelSerializer):
+
+    followers = MyFollowersListSerializer(many=True, read_only=True)
+    following = MyFollowingsListSerializer(many=True, read_only=True)
+
     class Meta:
         model = User
         fields = (
+            "id",
             "username",
             "first_name",
             "last_name",
@@ -45,6 +73,8 @@ class MyProfileSerializer(serializers.ModelSerializer):
             "is_verified",
             "bio",
             "profile_picture",
+            "followers",
+            "following",
         )
         read_only_fields = ("id", "is_verified")
 

@@ -54,6 +54,11 @@
     <p><strong>Bio:</strong> <span id="bio" class="editable" data-field="bio">Bio</span></p>
   </section>
 
+  <section id="profile-stats">
+    <p><strong>Followers:</strong> <span id="followers-count">0</span></p>
+    <p><strong>Following:</strong> <span id="following-count">0</span></p>
+  </section>
+
   <div id="response-message"></div>
 </div>
 
@@ -201,6 +206,13 @@
                 document.getElementById('email').innerText = data.email;
                 document.getElementById('bio').innerText = data.bio;
                 document.getElementById('profile-pic').src = data.profile_picture;
+
+
+                const followersCount = data.followers ? data.followers.length : 0;
+                const followingCount = data.following ? data.following.length : 0;
+
+                document.getElementById('followers-count').innerText = followersCount;
+                document.getElementById('following-count').innerText = followingCount;
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -209,6 +221,7 @@
                 responseMessageElement.style.color = 'red';
             });
     }
+
 
     // Add event listeners to editable fields
     document.querySelectorAll('.editable').forEach(element => {
