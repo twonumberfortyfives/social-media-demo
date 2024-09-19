@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.urls.base import reverse
 from rest_framework import generics, status
 from rest_framework.generics import GenericAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -30,7 +31,9 @@ class Register(GenericAPIView):
 
         # Generate the email verification URL
         current_site = get_current_site(request).domain
-        relative_link = reverse("email-verify")  # Assuming you have an email-verify URL
+        relative_link = reverse(
+            "user:email-verify"
+        )  # Assuming you have an email-verify URL
         absurl = f"http://{current_site}{relative_link}?token={tokens}"
         email_body = (
             f"Hi {user.username}, Use the link below to verify your email:\n{absurl}"
@@ -51,14 +54,6 @@ class Register(GenericAPIView):
             },
             status=status.HTTP_201_CREATED,
         )
-
-
-def sign_up_view(request):
-    return render(request, "sign_up.html")
-
-
-def sign_in_view(request):
-    return render(request, "sign_in.html")
 
 
 class VerifyEmail(GenericAPIView):
@@ -89,6 +84,25 @@ class VerifyEmail(GenericAPIView):
 
 class MyProfile(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = MyProfileSerializer
+    permission_classes = [
+        IsAuthenticated,
+    ]
 
     def get_object(self):
         return self.request.user
+
+    def patch(self, request, *args, **kwargs):
+        print(request.FILES)
+        return super().patch(request, *args, **kwargs)
+
+
+def sign_up_view(request):
+    return render(request, "sign_up.html")
+
+
+def sign_in_view(request):
+    return render(request, "sign_in.html")
+
+
+def my_profile_view(request):
+    return render(request, "my_profile.html")

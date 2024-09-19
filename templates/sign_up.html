@@ -25,12 +25,15 @@
   <label for="password">Password:</label>
   <input type="password" id="password" name="password" required><br><br>
 
+  <label for="profile_picture">Profile picture:</label>
+  <input type="file" id="profile_picture" name="profile_picture"><br><br>
+
   <button type="submit">Submit</button>
 </form>
 
 <br><br>
 
-<p>You have an account? <a href="{% url 'sign-in' %}">Sign in here</a></p>
+<p>You have an account? <a href="{% url 'user:sign-in' %}">Sign in here</a></p>
 
 <div id="response-message"></div>
 
@@ -38,36 +41,32 @@
     document.getElementById('registration-form').addEventListener('submit', function (event) {
         event.preventDefault();
 
-        const formData = new FormData(this);
-        const formObject = Object.fromEntries(formData.entries());  // Convert FormData to a JS object
+        const formData = new FormData(this);  // Use FormData to handle file uploads
 
         fetch('/user/api_v1/register/', {  // Make sure the URL is correct
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formObject),  // Send the form data as JSON
+            body: formData,  // Send FormData directly, including files
         })
-        .then(response => response.json())
-        .then(data => {
-            const responseMessageElement = document.getElementById('response-message');
-            if (data.message) {
-                // Display success message
-                responseMessageElement.innerText = data.message;
-                responseMessageElement.style.color = 'green';
-            } else {
-                // Display generic error message if something goes wrong
-                responseMessageElement.innerText = 'An error occurred during registration.';
+            .then(response => response.json())
+            .then(data => {
+                const responseMessageElement = document.getElementById('response-message');
+                if (data.message) {
+                    // Display success message
+                    responseMessageElement.innerText = data.message;
+                    responseMessageElement.style.color = 'green';
+                } else {
+                    // Display generic error message if something goes wrong
+                    responseMessageElement.innerText = 'An error occurred during registration.';
+                    responseMessageElement.style.color = 'red';
+                }
+            })
+            .catch(error => {
+                // Handle any network or other errors
+                console.error('Error:', error);
+                const responseMessageElement = document.getElementById('response-message');
+                responseMessageElement.innerText = 'An error occurred. Please try again.';
                 responseMessageElement.style.color = 'red';
-            }
-        })
-        .catch(error => {
-            // Handle any network or other errors
-            console.error('Error:', error);
-            const responseMessageElement = document.getElementById('response-message');
-            responseMessageElement.innerText = 'An error occurred. Please try again.';
-            responseMessageElement.style.color = 'red';
-        });
+            });
     });
 </script>
 
