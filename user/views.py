@@ -106,3 +106,4 @@ def sign_in_view(request):
 
 def my_profile_view(request):
     return render(request, "my_profile.html")
+
